@@ -42,7 +42,7 @@ jobs:
       - name: Build APK (all ABIs)
         run: |
           cd simple_live_app
-          flutter build apk --release --split-per-abi
+          flutter build apk --debug --split-per-abi
 
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
