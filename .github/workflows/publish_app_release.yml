@@ -20,10 +20,11 @@ jobs:
           java-version: "17"
           cache: "gradle"
 
+      # 指定具体版本，不指定 architecture，让 action 自动适配
       - name: Flutter action
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          flutter-version: '3.24.0'   # 使用明确支持 ARM64 的版本
           cache: true
 
       - name: Get version info
@@ -37,17 +38,20 @@ jobs:
           cd simple_live_app
           flutter pub get
 
-      - name: Build APK (arm64-v8a only)
+      # 构建全部 ABI (armeabi-v7a, arm64-v8a, x86_64)
+      - name: Build APK (all ABIs)
         run: |
           cd simple_live_app
-          flutter build apk --release --target-platform android-arm64
+          flutter build apk --release --split-per-abi
 
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: android-arm64-apk
+          name: android-apks
           path: |
-            simple_live_app/build/app/outputs/flutter-apk/app-release.apk
+            simple_live_app/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            simple_live_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            simple_live_app/build/app/outputs/flutter-apk/app-x86_64-release.apk
 
       - name: Upload Release
         uses: softprops/action-gh-release@v2
@@ -56,6 +60,8 @@ jobs:
           body: "${{ fromJson(steps.version.outputs.content).version_desc }}"
           prerelease: ${{ fromJson(steps.version.outputs.content).prerelease }}
           files: |
-            simple_live_app/build/app/outputs/flutter-apk/app-release.apk
+            simple_live_app/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            simple_live_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            simple_live_app/build/app/outputs/flutter-apk/app-x86_64-release.apk
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
