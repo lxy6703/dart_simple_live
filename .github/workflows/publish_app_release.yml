@@ -21,11 +21,10 @@ jobs:
           cache: "gradle"
 
       - name: Flutter action
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'   # 改用明确支持 ARM64 的版本
-          cache: true
-          # 不指定 architecture，自动适配
+  uses: subosito/flutter-action@v2
+  with:
+    flutter-version: 'stable'
+    cache: true
 
       - name: Get version info
         id: version
