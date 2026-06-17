@@ -29,25 +29,25 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.xycz.simple_live"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-ndk {
-        abiFilters += "arm64-v8a"
-    }
+
+        // 强制只打包 arm64-v8a 架构
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
     }
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String
+            // 安全转换，缺失时给出明确错误
+            keyAlias = keystoreProperties["keyAlias"] as? String ?: error("Missing keyAlias in key.properties")
+            keyPassword = keystoreProperties["keyPassword"] as? String ?: error("Missing keyPassword in key.properties")
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) } ?: error("Missing storeFile in key.properties")
+            storePassword = keystoreProperties["storePassword"] as? String ?: error("Missing storePassword in key.properties")
             isV1SigningEnabled = true
             isV2SigningEnabled = true
         }
@@ -55,12 +55,10 @@ ndk {
 
     buildTypes {
         release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                // Default file with automatically generated optimization rules.
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
