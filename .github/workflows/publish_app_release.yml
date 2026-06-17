@@ -14,40 +14,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Java 环境（缓存 Gradle）
       - uses: actions/setup-java@v4
         with:
           distribution: "zulu"
           java-version: "17"
           cache: "gradle"
 
-      # Flutter 环境（缓存 SDK 和 pub 包）
       - name: Flutter action
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.4"   # 固定版本，提高缓存命中
+          flutter-version: '3.24.0'   # 改用明确支持 ARM64 的版本
           cache: true
+          # 不指定 architecture，自动适配
 
-      # 从 tag 提取版本信息
       - name: Get version info
         id: version
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
           echo "content={\"version\":\"$TAG_NAME\",\"version_desc\":\"Release $TAG_NAME\",\"prerelease\":false}" >> $GITHUB_OUTPUT
 
-      # 恢复 pub 依赖（缓存命中则极快）
       - name: Restore packages
         run: |
           cd simple_live_app
           flutter pub get
 
-      # 仅构建 arm64-v8a APK
       - name: Build APK (arm64-v8a only)
         run: |
           cd simple_live_app
           flutter build apk --release --target-platform android-arm64
 
-      # 上传至 Artifacts（调试用）
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -55,7 +50,6 @@ jobs:
           path: |
             simple_live_app/build/app/outputs/flutter-apk/app-release.apk
 
-      # 发布到 Release
       - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
