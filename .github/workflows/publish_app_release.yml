@@ -20,11 +20,10 @@ jobs:
           java-version: "17"
           cache: "gradle"
 
-      # 指定具体版本，不指定 architecture，让 action 自动适配
       - name: Flutter action
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.x'   # 使用明确支持 ARM64 的版本
+          flutter-version: '3.38.x'
           cache: true
 
       - name: Get version info
@@ -38,11 +37,22 @@ jobs:
           cd simple_live_app
           flutter pub get
 
-      # 构建全部 ABI (armeabi-v7a, arm64-v8a, x86_64)
+      # --- 新增签名配置步骤 ---
+      - name: Decode keystore file
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > simple_live_app/android/my-release-key.jks
+
+      - name: Create key.properties
+        run: |
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" > simple_live_app/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> simple_live_app/android/key.properties
+          echo "storeFile=my-release-key.jks" >> simple_live_app/android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> simple_live_app/android/key.properties
+
       - name: Build APK (all ABIs)
         run: |
           cd simple_live_app
-          flutter build apk --debug --split-per-abi
+          flutter build apk --release --split-per-abi
 
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
