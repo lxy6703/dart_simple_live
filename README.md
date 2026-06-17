@@ -1,37 +1,4 @@
-> ### ⚠ 本项目不提供Release安装包，请自行编译后运行测试。
-
-
-<p align="center">
-    <img width="128" src="/assets/logo.png" alt="Simple Live logo">
-</p>
-<h2 align="center">Simple Live</h2>
-
-<p align="center">
-简简单单的看直播
-</p>
-
-![浅色模式](/assets/screenshot_light.jpg)
-
-![深色模式](/assets/screenshot_dark.jpg)
-
-## 支持直播平台：
-
-- 虎牙直播
-
-- 斗鱼直播
-
-- 哔哩哔哩直播
-
-- 抖音直播
-
-## APP支持平台
-
-- [x] Android
-- [x] iOS
-- [x] Windows `BETA`
-- [x] MacOS `BETA`
-- [x] Linux `BETA`
-- [x] Android TV `BETA`
+> 
 
 ## 项目结构
 
